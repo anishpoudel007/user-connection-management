@@ -4,11 +4,19 @@ from django.contrib.auth import authenticate
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from project import settings
 from user.models import User
 from user.serializer import LoginSerializer, UserRegisterSerializer, UserSerializer
+
+
+# test token authentication
+class TestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "I am protected"})
 
 
 class UserViewSet(viewsets.ModelViewSet):
