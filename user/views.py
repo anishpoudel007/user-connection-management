@@ -1,14 +1,19 @@
 import datetime
 import jwt
 from django.contrib.auth import authenticate
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from project import settings
 from user.models import User
-from user.serializer import LoginSerializer, UserRegisterSerializer, UserSerializer
+from user.serializer import (
+    LoginSerializer,
+    UserRegisterSerializer,
+    UserSearchSerializer,
+    UserSerializer,
+)
 
 
 # test token authentication
@@ -17,6 +22,30 @@ class TestView(APIView):
 
     def get(self, request):
         return Response({"message": "I am protected"})
+
+
+class UserSearchView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSearchSerializer
+
+    def get_queryset(self):
+        name = self.request.query_params.get("name")
+        company_name = self.request.query_params.get("company_name")
+        email = self.request.query_params.get("email")
+        contact_number = self.request.query_params.get("contact_number")
+
+        queryset = User.objects.all()
+
+        if name:
+            queryset = queryset.filter(username__icontains=name)
+        if company_name:
+            queryset = queryset.filter(company_name__icontains=company_name)
+        if email:
+            queryset = queryset.filter(email__icontains=email)
+        if contact_number:
+            queryset = queryset.filter(contact_number__icontains=contact_number)
+
+        return queryset
 
 
 class UserViewSet(viewsets.ModelViewSet):

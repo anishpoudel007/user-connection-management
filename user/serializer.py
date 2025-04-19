@@ -11,6 +11,21 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "username",
+            "email",
+            "contact_number",
+            "company_name",
+            "address",
+            "industry",
+        ]
+
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
