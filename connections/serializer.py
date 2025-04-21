@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.utils import choices
 from rest_framework import serializers
 
 from connections.models import Connection
@@ -32,3 +33,20 @@ class ConnectionCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError("Connection already exists.")
 
         return connection
+
+
+class ConnectionUpdateSerializer(serializers.Serializer):
+    connection_id = serializers.IntegerField()
+    status = serializers.ChoiceField(choices=Connection.Status.choices)
+
+    def validate_connection_id(self, value):
+        try:
+            connection = Connection.objects.get(id=value)
+        except Connection.DoesNotExist:
+            raise serializers.ValidationError("Connection does not exist.")
+        return value
+
+    def update(self, instance, validated_data):
+        instance.status = validated_data["status"]
+        instance.save()
+        return instance

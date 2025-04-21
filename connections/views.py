@@ -1,8 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
 
-from connections.serializer import ConnectionCreateSerializer
+from connections.models import Connection
+from connections.serializer import (
+    ConnectionCreateSerializer,
+    ConnectionUpdateSerializer,
+)
 
 
 class UserConnectionRequestView(APIView):
@@ -23,3 +27,28 @@ class UserConnectionRequestView(APIView):
                 }
             )
         return Response({"message": "user-connection-request"})
+
+
+class UserConnectionRequestUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, connection_id):
+        connection = get_object_or_404(Connection, id=connection_id)
+
+        data = request.data.copy()
+        data["connection_id"] = connection_id
+
+        serializer = ConnectionUpdateSerializer(
+            instance=connection, data=data, context={"request": request}
+        )
+
+        if serializer.is_valid():
+            updated_connection = serializer.save()
+            return Response(
+                {
+                    "message": "Connection request sent.",
+                    "status": updated_connection.status,
+                    "created_at": updated_connection.updated_at,
+                }
+            )
+        return Response({"errors": serializer.errors})

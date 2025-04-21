@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from connections.views import UserConnectionRequestView
+from connections.views import UserConnectionRequestUpdateView, UserConnectionRequestView
 from user.views import (
     TestView,
     UserLoginView,
@@ -24,6 +24,11 @@ urlpatterns = [
         "api/connection-request",
         UserConnectionRequestView.as_view(),
         name="user-connection-request",
+    ),
+    path(
+        "api/connection-request/<int:connection_id>",
+        UserConnectionRequestUpdateView.as_view(),
+        name="user-connection-request-update",
     ),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
