@@ -8,10 +8,18 @@ from connections.serializer import (
     ConnectionSerializer,
     ConnectionUpdateSerializer,
 )
+from user import serializer
 
 
 class UserConnectionRequestView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        queryset = request.user.connection_from.all()
+
+        serializer = ConnectionSerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
     def post(self, request):
         serializer = ConnectionCreateSerializer(
@@ -27,7 +35,7 @@ class UserConnectionRequestView(APIView):
                     "created_at": connection.created_at,
                 }
             )
-        return Response({"message": "user-connection-request"})
+        return Response({"errors": serializer.errors})
 
 
 class UserConnectionRequestUpdateView(APIView):

@@ -23,21 +23,25 @@ class ConnectionCreateSerializer(serializers.Serializer):
         except User.UserDoesNotExist:
             raise serializers.ValidationError("User does not exist.")
         self.context["to_user"] = user
-        return user
+        return value
 
-    def create(self, validated_data):
+    def validate(self, attrs):
         from_user = self.context["request"].user
-        to_user = validated_data["user_code"]
+        to_user = self.context.get("to_user")
 
         if from_user == to_user:
-            raise serializers.ValidationError("You cannot connect to yourself")
+            raise serializers.ValidationError("You cannot connect to yourself.")
 
-        connection, created = Connection.objects.get_or_create(
-            user_1=from_user, user_2=to_user
-        )
-
-        if not created:
+        if Connection.objects.filter(user_1=from_user, user_2=to_user).exists():
             raise serializers.ValidationError("Connection already exists.")
+
+        return attrs
+
+    def create(self, validated_data):
+        from_user = self.context.get("request").user
+        to_user = self.context.get("to_user")
+
+        connection = Connection.objects.create(user_1=from_user, user_2=to_user)
 
         send_connection_notification.delay(
             connection_id=connection.id,
