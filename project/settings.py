@@ -146,3 +146,7 @@ REST_FRAMEWORK = {
 JWT_SECRET_KEY = "jwt_secret_key"
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_LIFETIME = datetime.timedelta(minutes=15)
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"  # Use appropriate host/port
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"

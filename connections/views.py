@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
 
-from connections.models import Connection
+from connections.models import Connection, Notification
 from connections.serializer import (
     ConnectionCreateSerializer,
     ConnectionUpdateSerializer,

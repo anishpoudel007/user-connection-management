@@ -31,3 +31,22 @@ class Connection(models.Model):
 
     def __str__(self):
         return f"{self.user_1} <=> {self.user_2}"
+
+
+class Notification(models.Model):
+    class Type(models.TextChoices):
+        connection_request = "connection_request", "Connection Request"
+        connection_accepted = "connection_accepted", "Connection Accepted"
+        connection_rejected = "connection_rejected", "Connection Rejected"
+
+    type = models.CharField(max_length=30, choices=Type.choices)
+    message = models.TextField()
+    connection = models.ForeignKey(
+        Connection, on_delete=models.CASCADE, related_name="connections"
+    )
+    recipient = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="recipients"
+    )
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="senders")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.utils import choices
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 from connections.models import Connection
+from connections.tasks import send_connection_notification
 
 User = get_user_model()
 
@@ -32,6 +33,12 @@ class ConnectionCreateSerializer(serializers.Serializer):
         if not created:
             raise serializers.ValidationError("Connection already exists.")
 
+        send_connection_notification.delay(
+            connection_id=connection.id,
+            sender_id=from_user.id,
+            status=Connection.Status.PENDING,
+        )
+
         return connection
 
 
@@ -49,4 +56,16 @@ class ConnectionUpdateSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.status = validated_data["status"]
         instance.save()
+
+        try:
+            send_connection_notification.delay(
+                instance.id, self.context["request"].user.id, instance.status
+            )
+        except Exception as e:
+            print(f"Celery task call failed: {e}")
+        # send_connection_notification.delay(
+        #     connection_id=instance.id,
+        #     sender_id=self.context["request"].user.id,
+        #     status=validated_data["status"],
+        # )
         return instance
