@@ -7,6 +7,13 @@ from connections.tasks import send_connection_notification
 User = get_user_model()
 
 
+class ConnectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Connection
+        fields = "__all__"
+        read_only_fields = ("user_1", "user_2", "created_at", "updated_at")
+
+
 class ConnectionCreateSerializer(serializers.Serializer):
     user_code = serializers.CharField()
 
@@ -42,7 +49,7 @@ class ConnectionCreateSerializer(serializers.Serializer):
 
 
 class ConnectionUpdateSerializer(serializers.Serializer):
-    connection_id = serializers.IntegerField()
+    connection_id = serializers.IntegerField(write_only=True)
     status = serializers.ChoiceField(choices=Connection.Status.choices)
 
     def validate_connection_id(self, value):

@@ -5,6 +5,7 @@ from rest_framework.views import APIView, Response
 from connections.models import Connection
 from connections.serializer import (
     ConnectionCreateSerializer,
+    ConnectionSerializer,
     ConnectionUpdateSerializer,
 )
 
@@ -43,12 +44,10 @@ class UserConnectionRequestUpdateView(APIView):
         )
 
         if serializer.is_valid():
-            updated_connection = serializer.save()
-            return Response(
-                {
-                    "message": "Connection request sent.",
-                    "status": updated_connection.status,
-                    "created_at": updated_connection.updated_at,
-                }
+            instance = serializer.save()
+
+            connection_serializer = ConnectionSerializer(
+                instance=instance,
             )
+            return Response(connection_serializer.data)
         return Response({"errors": serializer.errors})
