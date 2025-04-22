@@ -1,7 +1,8 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
 
-from connections.models import Connection, Notification
+from connections.models import Connection
+from notification.models import Notification
 
 
 User = get_user_model()

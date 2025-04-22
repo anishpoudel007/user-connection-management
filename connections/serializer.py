@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.utils import choices
-from rest_framework import serializers, status
+from rest_framework import serializers
 
 from connections.models import Connection
 from connections.tasks import send_connection_notification
@@ -59,13 +58,8 @@ class ConnectionUpdateSerializer(serializers.Serializer):
 
         try:
             send_connection_notification.delay(
-                instance.id, self.context["request"].user.id, instance.status
+                instance.id, self.context["request"].user.id, validated_data["status"]
             )
         except Exception as e:
             print(f"Celery task call failed: {e}")
-        # send_connection_notification.delay(
-        #     connection_id=instance.id,
-        #     sender_id=self.context["request"].user.id,
-        #     status=validated_data["status"],
-        # )
         return instance

@@ -16,14 +16,6 @@ from user.serializer import (
 )
 
 
-# test token authentication
-class TestView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({"message": "I am protected"})
-
-
 class UserSearchView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSearchSerializer
