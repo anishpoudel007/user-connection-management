@@ -24,6 +24,10 @@ RUN uv pip install -r pyproject.toml --system
 # Copy the rest of the project
 COPY . .
 
-# Run using gunicorn with WSGI
-CMD ["gunicorn", "project.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Copy entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Run migrations and start gunicorn
+ENTRYPOINT ["/entrypoint.sh"]
 
