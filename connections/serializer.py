@@ -20,7 +20,7 @@ class ConnectionCreateSerializer(serializers.Serializer):
     def validate_user_code(self, value):
         try:
             user = User.objects.get(user_code=value)
-        except User.UserDoesNotExist:
+        except User.DoesNotExist:
             raise serializers.ValidationError("User does not exist.")
         self.context["to_user"] = user
         return value

@@ -2,7 +2,7 @@ import jwt
 from django.contrib.auth import get_user_model
 from rest_framework.authentication import BaseAuthentication, exceptions
 
-from project import settings
+from django.conf import settings
 
 
 User = get_user_model()
