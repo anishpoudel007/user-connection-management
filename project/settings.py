@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 import datetime
 
 from pathlib import Path
@@ -22,12 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-5wpuwbe%wxem@=42$*b!&in2y6o^o^1d@uihpn6&*pt!+=j82+"
+# SECRET_KEY = "django-insecure-5wpuwbe%wxem@=42$*b!&in2y6o^o^1d@uihpn6&*pt!+=j82+"
+SECRET_KEY = os.environ.get("SECRET_KEY", "hello")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -131,8 +133,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "user.User"
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_PERMISSION_CLASSES": [
@@ -148,6 +148,6 @@ JWT_SECRET_KEY = "jwt_secret_key"
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_LIFETIME = datetime.timedelta(minutes=15)
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"  # Use appropriate host/port
+CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
