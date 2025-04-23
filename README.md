@@ -75,3 +75,8 @@ uv pip install -r pyproject.toml
 ```bash
 uv run manage.py runserver
 ```
+
+
+### Note:
+
+I have attached the postman collection in the repo.
