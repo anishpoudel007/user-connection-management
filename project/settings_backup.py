@@ -17,7 +17,6 @@ from pathlib import Path
 
 from .utils import load_env_file
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_env_file(BASE_DIR / ".env")
