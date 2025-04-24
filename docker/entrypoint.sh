@@ -1,7 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
-echo "Running migrations..."
-python manage.py migrate
+if [ "$1" = "gunicorn" ]; then
+  echo "Waiting for postgres..."
+  while ! nc -z db 5432; do
+    sleep 0.1
+  done
+  echo "PostgreSQL started"
 
-echo "Starting Gunicorn..."
-exec gunicorn --workers $(nproc) project.wsgi:application --bind 0.0.0.0:8000
+  echo "Running migrations..."
+  python manage.py migrate
+fi
+
+# Run the passed command
+exec "$@"

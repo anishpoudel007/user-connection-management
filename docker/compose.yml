@@ -3,6 +3,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    command: ["/entrypoint.sh", "gunicorn", "project.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4"]
     volumes:
       - ..:/code
     ports:
@@ -11,6 +12,25 @@ services:
       - ../.env
     depends_on:
       - db
+      - redis
+
+  celery:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: celery -A project worker --loglevel=info
+    volumes:
+      - ..:/code
+    env_file:
+      - ../.env
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
 
   db:
     image: postgres:15
